@@ -41,7 +41,8 @@ wsServer.on("connection", (socket) => {
   let myRoomName = null;
   let myNickname = null;
 
-  socket.on("join_room", (roomName, nickname) => {
+  socket.on("join", (roomName, nickname) => {
+    console.log('join')
     myRoomName = roomName;
     myNickname = nickname;
 
@@ -81,10 +82,11 @@ wsServer.on("connection", (socket) => {
     ++targetRoomObj.currentNum;
 
     socket.join(roomName);
-    socket.emit("accept_join", targetRoomObj.users);
+    socket.emit("join", targetRoomObj.users);
   });
 
   socket.on("offer", (offer, remoteSocketId, localNickname) => {
+    console.log('offer')
     socket.to(remoteSocketId).emit("offer", offer, socket.id, localNickname);
   });
 

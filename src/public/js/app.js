@@ -179,7 +179,7 @@ async function handleWelcomeSubmit(event) {
   nickname = welcomeNickname.value;
   welcomeNickname.value = "";
   nicknameContainer.innerText = nickname;
-  socket.emit("join_room", roomName, nickname);
+  socket.emit("join", roomName, nickname);
 }
 
 welcomeForm.addEventListener("submit", handleWelcomeSubmit);
@@ -301,7 +301,8 @@ socket.on("reject_join", () => {
   nickname = "";
 });
 
-socket.on("accept_join", async (userObjArr) => {
+socket.on("join", async (userObjArr) => {
+  console.log("join");
   await initCall();
 
   const length = userObjArr.length;
@@ -328,7 +329,9 @@ socket.on("accept_join", async (userObjArr) => {
 });
 
 socket.on("offer", async (offer, remoteSocketId, remoteNickname) => {
+  console.log("offer", remoteNickname);
   try {
+    offer.type = "offer";
     const newPC = createConnection(remoteSocketId, remoteNickname);
     await newPC.setRemoteDescription(offer);
     const answer = await newPC.createAnswer();
@@ -341,10 +344,15 @@ socket.on("offer", async (offer, remoteSocketId, remoteNickname) => {
 });
 
 socket.on("answer", async (answer, remoteSocketId) => {
+  console.log("answer");
+  answer.type = "answer";
   await pcObj[remoteSocketId].setRemoteDescription(answer);
 });
 
 socket.on("ice", async (ice, remoteSocketId) => {
+  if ('sdp' in ice) {
+    ice['candidate'] = ice['sdp'];
+  }
   await pcObj[remoteSocketId].addIceCandidate(ice);
 });
 
