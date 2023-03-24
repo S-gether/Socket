@@ -3,7 +3,7 @@ import express from "express";
 import SocketIO from "socket.io";
 import http from "http";
 
-const PORT = process.env.PORT || 4000;
+const PORT = 80;
 
 const app = express();
 
